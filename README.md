@@ -205,3 +205,49 @@ DoorDash: Adopted Amazon Aurora to scale its database infrastructure and manage 
 Alloy: Employs Amazon Aurora Serverless to power its identity verification and fraud prevention platform, handling heavy transaction volume fluctuations for banks and financial tech companies.
 
 Experian: Replaced legacy relational systems with Amazon Aurora to improve application performance, accelerate credit report refreshes, and cut replication lag.
+
+Section 9: AWS Fundamentals: RDS + Aurora + ElastiCache
+This section focuses on the core managed relational database and in-memory caching services available on AWS, detailing their architectures, scalability options, security mechanisms, and use cases for the Solutions Architect exam.
+
+🔑 Key Architectural Concepts
+1. Amazon RDS (Relational Database Service)
+Overview & Engines: Fully managed relational database service supporting MySQL, PostgreSQL, MariaDB, Oracle, and Microsoft SQL Server.
+
+RDS Read Replicas vs. Multi-AZ:
+
+Read Replicas: Used for vertical read scalability. Operates via asynchronous replication to offload read workloads. Replicas can span cross-region for disaster recovery.
+
+Multi-AZ: Used strictly for High Availability (HA) and Disaster Recovery (DR). Operates via synchronous replication to a passive standby instance in a different Availability Zone. The standby cannot accept active traffic.
+
+RDS Custom: Provides administrative OS-level access and customization privileges for Oracle and Microsoft SQL Server to support legacy applications, custom patching, and specialized software configurations.
+
+RDS Proxy: An elegant connection pooling solution that minimizes database connection overhead, increases application resiliency during database failovers, and bypasses poor application reconnection logic.
+
+2. Amazon Aurora
+Cloud-Native Design: AWS's custom, fully managed relational database engine featuring high-speed open-source compatibility (specifically MySQL and PostgreSQL).
+
+Advanced Concepts & Scaling:
+
+Aurora Serverless: Automatically starts up, scales compute capacity up or down based on unpredictable or intermittent traffic loads, and shuts down entirely when completely unused to maximize cost efficiency.
+
+Aurora Database Cloning: Uses a copy-on-write protocol to instantly provision a new, independent, and writeable duplicate of a production cluster without copying physical data blocks, ideal for isolated testing environments.
+
+3. Amazon ElastiCache
+In-Memory Performance: Managed caching layer used to deliver sub-millisecond latencies for high-throughput workloads.
+
+Engine Distinctions:
+
+Redis: Highly available caching architecture supporting replication, multi-AZ configurations, persistence, and complex, native data types (e.g., Sorted Sets, which are the gold standard for real-time gaming leaderboards).
+
+Memcached: Simple, multi-threaded key-value memory object store designed strictly for non-persistent caching without native data sorting or multi-AZ replication features.
+
+🛡️ Security, Backup, & Operations
+RDS Security: Managed via IAM Database Authentication (using short-lived tokens instead of permanent passwords), database security groups, and KMS keys for data at rest.
+
+Encryption Migration: Database encryption status must match its underlying architecture. An unencrypted database cannot have encrypted replicas. Forcing encryption requires taking a manual snapshot, copying it with encryption enabled via KMS, and restoring a new instance.
+
+Backup Strategy:
+
+Automated Backups: Designed for short-term point-in-time recovery with a strict maximum retention ceiling of 35 days.
+
+On-Demand Backups (Snapshots): Manual storage snapshots that persist indefinitely until explicitly deleted, serving compliance, multi-year auditing, and long-term DR archiving.
