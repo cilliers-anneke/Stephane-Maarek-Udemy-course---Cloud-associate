@@ -251,3 +251,47 @@ Backup Strategy:
 Automated Backups: Designed for short-term point-in-time recovery with a strict maximum retention ceiling of 35 days.
 
 On-Demand Backups (Snapshots): Manual storage snapshots that persist indefinitely until explicitly deleted, serving compliance, multi-year auditing, and long-term DR archiving.
+
+Section 10: Route 53
+This section covers Amazon Route 53, an enterprise-grade, highly available Domain Name System (DNS) web service. It highlights core DNS concepts, hosted zone management, record types, health checking mechanisms, and advanced routing policies essential for the Solutions Architect exam.
+
+🌐 Core DNS & Managed Services
+1. Hosted Zones
+Public Hosted Zones: Contain records that specify how you want to route internet traffic for a public domain.
+
+Private Hosted Zones: Contain records that route traffic within one or more Amazon VPCs without exposing DNS data to the public internet.
+
+Domain Registration vs. DNS Routing: You can use Route 53 purely as a DNS service provider for a domain registered with a third party (e.g., GoDaddy). To delegate authority, you must update the third-party registrar's NS (Name Server) records to point to the four unique name servers assigned by Route 53.
+
+2. Key DNS Records & Mechanics
+TTL (Time to Live): Dictates how long a local DNS resolver or client browser caches a DNS record before sending a fresh query to Route 53. High TTL reduces query volume but delays traffic redirection during resource updates.
+
+CNAME vs. Alias Records:
+
+CNAME: Points a hostname to another hostname (e.g., app.mydomain.com to my-elb.amazonaws.com). DNS protocol constraints forbid using a CNAME for the Zone Apex (root domain like mydomain.com).
+
+Alias: An AWS-proprietary record type that maps a hostname directly to AWS resources (ELB, CloudFront, S3, etc.). Unlike CNAMEs, Alias records can be used for the Zone Apex and automatically recognize resource IP changes.
+
+🔀 Route 53 Routing Policies
+Amazon Route 53 uses distinct routing policies to determine how it responds to queries based on application needs, latency targets, and health status:
+
+Simple Routing Policy: Best for single resources. It routes traffic to a single pre-defined endpoint or returns multiple values in a randomized order to the client.
+
+Weighted Routing Policy: Allows you to assign relative weights (percentages) to multiple resources. Excellent for Canary Testing and safe deployment rollouts (e.g., sending exactly 5% of production traffic to a new Elastic Beanstalk environment).
+
+Latency-based Routing Policy: Minimizes user response times by automatically routing traffic to the AWS Region that provides the lowest network latency (fastest round-trip time) for that specific user.
+
+Failover Routing Policy: Used to configure active-passive architectures for disaster recovery. Traffic goes 100% to the primary resource unless Route 53 health checks fail, triggering a seamless shift to the secondary backup resource.
+
+Geolocation Routing Policy: Directs traffic based on the geographic origin country or continent of the user's DNS query. Ideal for localization, content restrictions, and meeting strict regional legal/compliance requirements.
+
+Geoproximity Routing Policy: Routes traffic based on the physical distance between your users and your resources. You can optionally apply a "bias" value to manually expand or shrink the geographic footprint routed to a particular region.
+
+IP-based Routing Policy: Tailors routing responses based on the specific client CIDR block or subnet making the query, giving you precise architectural control over internal corporate traffic paths.
+
+🩺 Health Checks & Resiliency
+Resource Monitoring: Route 53 continuously probes your endpoints (via HTTP, HTTPS, or TCP). If a resource becomes unhealthy, it is automatically stripped from the active routing pool.
+
+Calculated Health Checks: Allows you to combine multiple health checks using logical operators (AND, OR, NOT) to monitor complex multi-tier application architectures.
+
+Metric-Driven Health Checks: Can be linked directly to Amazon CloudWatch alarms, allowing you to trigger DNS failovers based on internal performance metrics (like high CPU utilization or application error rates) rather than simple web pings.
